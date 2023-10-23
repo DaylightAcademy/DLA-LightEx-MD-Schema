@@ -1,0 +1,93 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema",
+  "$id": "https://github.com/cdsig/CDSIG-Schema/blob/main/acquisition.json",
+  "title": "Acquisition-level metadata (within dataset)",
+  "description": "Acquisition",
+  "type": "object",
+  "properties": {
+    "device_internal_id": {
+      "description": "Reference to the internal ID of the related device",
+      "type": "string"
+    },
+    "device_position": {
+      "title": "Device position",
+      "description": "Position of the acquisition device",
+      "type": "object",
+      "properties": {
+        "location": {
+          "title": "Location of the device",
+          "description": "Anatomical location of the acquisition device",
+          "example": "Wrist of the non-dominant hand",
+          "type": "string"
+        },
+        "orientation": {
+          "title": "Orientation of the device",
+          "description": "Orientation of the acquisition device",
+          "example": "z-axis pointing out of wrist",
+          "type": "string"
+        }
+      },
+      "required": [ "location", "orientation"]
+    },
+    "device_sensors": {
+      "title": "",
+      "description": "Sensors included in the device",
+      "type": "array",
+      "items": {
+        "type": "object",
+        "properties": {
+          "device_sensor_internal_id": {
+            "title": "Internal ID",
+            "description": "Internal ID of the sensor",
+            "example": "1",
+            "type": "number"
+          },
+          "device_sensor_category": {
+            "title": "Category",
+            "description": "Category of data acquired by the sensor",
+            "enum": ["motion", "light"]
+          }
+        },
+        "required": [
+          "device_sensor_internal_id",
+          "device_sensor_category"
+        ],
+        "dependencies": {
+          "device_sensor_category": {
+            "oneOf": [
+              {
+                "properties": {
+                  "device_sensor_category": {
+                    "enum": ["motion"]
+                  },
+                  "sensor": {
+                    "$ref": "https://raw.githubusercontent.com/cdsig/CDSIG-Schema/main/sensors/sensor_motion_acq.json"
+                  }
+                },
+                "required": ["sensor"]
+              },
+              {
+                "properties": {
+                  "device_sensor_category": {
+                    "enum": ["light"]
+                  },
+                  "sensor": {
+                    "$ref": "https://raw.githubusercontent.com/cdsig/CDSIG-Schema/main/sensors/sensor_light_acq.json"
+                  }
+                },
+                "required": ["sensor"]
+              }
+            ]
+          }
+        }
+      },
+      "minItems": 1,
+      "uniqueItems": true
+    },
+    "comment": {
+      "description": "Comment about an acquisition",
+      "type": "string"
+    }
+  },
+  "required": [ "device_internal_id", "device_position"]
+}
